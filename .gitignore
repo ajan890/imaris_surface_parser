@@ -1,0 +1,6 @@
+/cudaDecon/
+/log.txt
+*/__pycache__/
+/test.ipynb
+.idea/
+__pycache__/
