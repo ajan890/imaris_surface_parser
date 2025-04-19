@@ -3,6 +3,18 @@ from pathlib import Path
 from shutil import rmtree
 from utils import save_numpy
 
+from rasterize_mesh import rasterize_all_indices
+from build_image import read_mesh_index, build_image
+
+from numba import jit
+
+
+COORDS_SUBFOLDER = "np_coords"
+INDICES_SUBFOLDER = "np_indices"
+NORMALS_SUBFOLDER = "np_normals"
+MESH_SUBFOLDER = "np_meshes"
+IMAGE_SUBFOLDER = "image"
+
 
 # voxel_sizes is a list [x, y, z]
 # skip_to = 0: start from coords, skip_to = 1: start from normals, skip_to = 2: start from triangles
@@ -21,7 +33,7 @@ def read_wrl(filepath: Path, output_path: Path, voxel_sizes: list, skip_to: int 
             print("ERROR: bad wrl format - cannot find coordinates.")
             return -1
 
-        coords_path = output_path / "np_coords"
+        coords_path = output_path / COORDS_SUBFOLDER
         coords_path.mkdir(exist_ok=True)
 
         # loop through coords
@@ -53,13 +65,13 @@ def read_wrl(filepath: Path, output_path: Path, voxel_sizes: list, skip_to: int 
 
         while not in_normals:
             line = infile.readline()
-            if "VRMLNormal" in line:
+            if "{" in line:
                 in_normals = True
         if not in_normals:
             print("ERROR: bad wrl format - cannot find normals.")
             return -1
 
-        normals_path = output_path / "np_normals"
+        normals_path = output_path / NORMALS_SUBFOLDER
         normals_path.mkdir(exist_ok=True)
         file_count = 0
 
@@ -103,7 +115,7 @@ def read_wrl(filepath: Path, output_path: Path, voxel_sizes: list, skip_to: int 
             print("ERROR: bad wrl format - cannot find triangles.")
             return -1
 
-        triangles_path = output_path / "np_indices"
+        triangles_path = output_path / INDICES_SUBFOLDER
         triangles_path.mkdir(exist_ok=True)
         triangle_index = {}
         file_count = 0
@@ -174,18 +186,48 @@ def parse_wrl(args):
         print(f"Creating output directory: {output_root.absolute()}")
         output_root.mkdir(parents=True)
     elif args.skip_to == 0:
+        c = ''
+        while not c or c[0] not in {'y', 'n', 'Y', 'N'}:
+            print(f"Output directory: {output_root.absolute()}")
+            c = input("Output directory exists.  Continuing operation will destroy all contents.  Proceed?  [y/n]")
+        if c[0] in {'n', 'N'}:
+            print("Terminating process.")
+            return
         print(f"Output directory exists, burning all contents...")
         rmtree(output_root)
         output_root.mkdir(parents=True)
 
-    # get voxel sizes
-    voxel_sizes = [args.dx, args.dy, args.dz]
+    if args.skip_to <= 2:
+        # get voxel sizes
+        voxel_sizes = [args.dx, args.dy, args.dz]
 
-    # read wrl file and get coordinates, normals, and triangles
-    read_wrl(input_path, output_root, voxel_sizes, skip_to=args.skip_to)
+        # read wrl file and get coordinates, normals, and triangles
+        read_wrl(input_path, output_root, voxel_sizes, skip_to=args.skip_to)
 
-    print("COMPLETE")
+        print("wrl converted to index, normal, and coordinate files successfully.")
+    if args.skip_to <= 3:
+        print("Voxelizing meshes.")
 
+        # rasterize the mesh
+        rasterize_all_indices(indices_folder=(output_root / INDICES_SUBFOLDER),
+                              coords_folder=(output_root / COORDS_SUBFOLDER),
+                              output_filepath=(output_root / MESH_SUBFOLDER),
+                              threads=args.num_threads)
+        print("Voxelization successful.")
+    if args.skip_to <= 4:
+        print("Building image.")
+        # load mesh indices
+        mesh_index = read_mesh_index(output_root / MESH_SUBFOLDER)
+
+        # construct final image [TODO: MAKE MINS/MAXS NOT CONSTANTS]
+        image_mins = [4008, -8164, -5286]
+        image_maxs = [6738, -4582, -1832]
+        build_image(d=mesh_index,
+                    mins=image_mins,
+                    maxs=image_maxs,
+                    meshes=(output_root / MESH_SUBFOLDER),
+                    output=(output_root / IMAGE_SUBFOLDER))
+        print("COMPLETE")
 
 if __name__ == '__main__':
     parser = ArgumentParser()
