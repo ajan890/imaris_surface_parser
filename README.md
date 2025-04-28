@@ -38,12 +38,13 @@ The output will be located in the output directory provided, under the `image` f
 
 ## Dependencies
 * argparse, multiprocessing, numpy, open3d, pathlib, scipy, shutil, tqdm, tifffile
+
 All of these can be found via the Package Installer for Python (pip)
 ```
 pip install argparse multiprocessing numpy open3d pathlib scipy pytest-shutil tqdm tifffile
 ```
 If also using [image-processing-pipeline](https://github.com/ucla-brain/image-preprocessing-pipeline), the `stitching` environment contains all the libraries necessary.
 
-#### -
+### Development
 
 Developed by Aidan Jan, Hongwei Dong Lab (B.R.A.I.N) @ UCLA, 2025
