@@ -219,14 +219,17 @@ def parse_wrl(args):
         # load mesh indices
         mesh_index = read_mesh_index(output_root / MESH_SUBFOLDER)
 
-        # construct final image [TODO: MAKE MINS/MAXS NOT CONSTANTS]
-        image_mins = [4008, -8164, -5286]
-        image_maxs = [6738, -4582, -1832]
+        # construct final image
+        image_mins = [min(pair) for pair in [args.x] + [args.y] + [args.z]]
+        image_maxs = [max(pair) for pair in [args.x] + [args.y] + [args.z]]
+
         build_image(d=mesh_index,
                     mins=image_mins,
                     maxs=image_maxs,
                     meshes=(output_root / MESH_SUBFOLDER),
-                    output=(output_root / IMAGE_SUBFOLDER))
+                    output=(output_root / IMAGE_SUBFOLDER),
+                    flips=[args.flip_x, args.flip_y, args.flip_z]
+                    )
         print("COMPLETE")
 
 if __name__ == '__main__':
@@ -246,6 +249,18 @@ if __name__ == '__main__':
                         help="Voxel size in y-axis")
     parser.add_argument('--dz', '-dz', type=float, required=True,
                         help="Voxel size in z-axis")
+    parser.add_argument('--x', '-x', nargs=2, type=int, required=True,
+                        help="Minimum and maximum of the x-axis.")
+    parser.add_argument('--y', '-y', nargs=2, type=int, required=True,
+                        help="Minimum and maximum of the y-axis.")
+    parser.add_argument('--z', '-z', nargs=2, type=int, required=True,
+                        help="Minimum and maximum of the y-axis.")
     parser.add_argument('--skip_to', '-st', type=int, default=0,
                         help="Skip to certain save point to avoid recomputing in case of crash.  Mutually exclusive with --force_restart")
+    parser.add_argument("--flip_x", '-fx', action='store_true',
+                        help="Flip images along x axis")
+    parser.add_argument("--flip_y", '-fy', action='store_true',
+                        help="Flip images along y axis")
+    parser.add_argument("--flip_z", '-fz', action='store_true',
+                        help="Flip images along z axis")
     parse_wrl(parser.parse_args())

@@ -1,17 +1,9 @@
 from utils import load_numpy
 from pathlib import Path
-from numpy import zeros, asarray, uint8, swapaxes
+from numpy import zeros, asarray, uint8, rot90
 from tqdm import tqdm
 from tifffile import imwrite
 
-# AD6 brain ims: (622.555 GB)
-# Image size:       X: 10559    Y: 7589     Z: 4171
-
-# micrometers       X:          Y:          Z:
-# Voxel size:       1.80        1.80        1.80
-# Min:              0.00        -1.37e4     -7508
-# Max:              1.90e4      0.00        0.00
-# X:\3D_stitched_LS\20231010_FM230407_07_LS_15x_800z_AD1\Plaques\LS\FM230407_07_LS_6x_1000z_deconvolved_crop_LS.ims
 
 def read_mesh_index(mesh_filepath: Path):
     d = {}
@@ -28,14 +20,30 @@ def read_mesh_index(mesh_filepath: Path):
     return d
 
 
-def save_image(data, output_file):
+def save_image(data, output_file, flips):
     output_file.mkdir(parents=True, exist_ok=True)
     _dtype = uint8
     print("Saving images...")
-    for z in tqdm(range(data.shape[2])):
-        layer = data[:, :, z].swapaxes(0, 1)
-        path = output_file / (str(z) + ".tif")
-        imwrite(path, layer.astype(_dtype), dtype=_dtype)
+    file_num = 0
+    if flips[2]: # if flip z
+        for z in tqdm(range(data.shape[2] - 1, -1, -1)):
+            layer = rot90(data[::-1, ::-1, z]) if flips[0] and flips[1] else \
+                    rot90(data[::-1, :, z]) if flips[0] and not flips[1] else \
+                    rot90(data[:, ::-1, z]) if flips[0] and flips[1] else \
+                    rot90(data[:, :, z])
+
+            path = output_file / (str(file_num) + ".tif")
+            imwrite(path, layer.astype(_dtype), dtype=_dtype)
+            file_num += 1
+    else:
+        for z in tqdm(range(data.shape[2])):
+            layer = rot90(data[::-1, ::-1, z]) if flips[0] and flips[1] else \
+                    rot90(data[::-1, :, z]) if flips[0] and not flips[1] else \
+                    rot90(data[:, ::-1, z]) if not flips[0] and flips[1] else \
+                    rot90(data[:, :, z])
+            path = output_file / (str(file_num) + ".tif")
+            imwrite(path, layer.astype(_dtype), dtype=_dtype)
+            file_num += 1
 
 
 def paste_array(img, arr, position):
@@ -44,9 +52,7 @@ def paste_array(img, arr, position):
     paste_region[arr] = True
 
 
-# TODO: make building image work for cases where coordinates go from -n -> 0 instead of 0 -> n.
-#       (Maybe detect that and just flip image after?)
-def build_image(d, mins, maxs, meshes, output):
+def build_image(d, mins, maxs, meshes, output, flips):
     image_size = tuple([maxs[i] - mins[i] + 1 for i in range(len(mins))])
     image = zeros(image_size, dtype=bool)
 
@@ -59,7 +65,7 @@ def build_image(d, mins, maxs, meshes, output):
         paste_array(image, arr, adjusted_min)
         count += 1
 
-    save_image(image, output)
+    save_image(image, output, flips)
 
 
 if __name__ == '__main__':
@@ -69,20 +75,8 @@ if __name__ == '__main__':
     output_path = Path(r'E:\Aidan\testing_extraction\np_meshes_out')
 
     mesh_index = read_mesh_index(mesh_path)
-    # build_image(mesh_index, image_mins, image_maxs, mesh_path, output_path)
 
     print("COMPLETE")
 
-    # img = zeros((8, 8, 8), dtype=bool)
-    # paste = asarray([[[False, True], [True, False]], [[True, False], [False, True]]])
-    # paste2 = asarray([[[True, False], [False, True]], [[False, True], [True, False]]])
-    #
-    # paste_array(img, paste, ((2, 3, 1)))
-    # paste_array(img, paste2, ((2, 3, 1)))
-    #
-    # print("TEST")
 
-    # test_path = Path(r'E:\Aidan\plaques_extracted\testing')
-    # img = zeros((80, 70, 100), dtype=bool)
-    # save_image(img, test_path)
 
