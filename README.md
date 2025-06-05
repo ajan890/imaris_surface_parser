@@ -1,7 +1,18 @@
-# plaque_processing_pipeline
+# imaris_surface_parser
 
 ## Introduction
 This library contains a script to voxelize the mesh output exporting surfaces from the [Imaris software](https://imaris.oxinst.com/), which the data is a (often) very large .wrl file.  This program was initially written to convert human-labeled alzheimer's plaques in the form of mesh data into a binary mask in order for the data to be suitable for machine learning.
+
+### Export Surfaces from Imaris
+1.  First, load up your image and open it in Surpass.
+2.  In the Properties section, select the surface of interest.
+
+![image](https://github.com/user-attachments/assets/6464222c-84f8-4ef3-8ac8-f6bbf7b85c7d)
+
+3.  Go to the 3D View dropdown menu and click 'Export Selected Objects'.  This will allow you to save the surface as a .wrl file.
+
+![image](https://github.com/user-attachments/assets/40eddf86-9908-4825-bd2f-709f6d5c5d55)
+
 
 ## Running
 This program can be run in Command Prompt (Windows).  Not yet tested for Linux.
@@ -13,7 +24,7 @@ First, clone this repository and cd into it.
 
 ### Arguments
 * `--input`, `-i` (required, string): File path to input .wrl file containing the mesh data.  The .wrl, if opened, should contain all the coordinates and normals in single arrays.  (e.g., the first shape object will have the Coordinate and Normal arrays.  All the other shapes should use the same array.)
-* `--output`, `-o` (required, string): File path to output directory where image will be stored.  Ideally this directory should be non-existant or empty.  Directories with contents at the start will be deleted.
+* `--output`, `-o` (required, string): File path to output directory where the binary mask image will be stored.  Ideally this directory should be non-existant or empty.  Directories with contents at the start will be deleted.
 * `--force_restart`, `-fr`: DEPRECATED.  Starts the program from the beginning.
 * `--num_threads`, `-n` (optional, int, default=1): Number of threads used for assembling the final output image.
 * `--dx`, `-dx` (required, float): Voxel size in the x-axis
@@ -48,3 +59,6 @@ If also using [image-processing-pipeline](https://github.com/ucla-brain/image-pr
 ### Development
 
 Developed by Aidan Jan, Hongwei Dong Lab (B.R.A.I.N) @ UCLA, 2025
+
+### Disclaimer
+This tool was developed independently from Imaris.  It is not affiliated nor endorsed by Bitplane or Oxford Instruments.
