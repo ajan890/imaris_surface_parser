@@ -239,8 +239,8 @@ if __name__ == '__main__':
                         help="Path to input .wrl file")
     parser.add_argument('--output', '-o', type=str, required=True,
                         help="Path to output directory.  EXISTING CONTENTS IN THE OUTPUT DIRECTORY WILL BE DELETED.  Non-existant directories will be created.")
-    parser.add_argument('--force_restart', '-fr', action='store_true',
-                        help="Since the process may take long, the program will automatically continue from the last saved point if it crashed.  Include this argument to force a restart.")
+    # parser.add_argument('--force_restart', '-fr', action='store_true',
+    #                     help="Since the process may take long, the program will automatically continue from the last saved point if it crashed.  Include this argument to force a restart.")
     parser.add_argument('--num_threads', '-n', type=int, default=1,
                         help="Number of threads used for assembling final output image.")
     parser.add_argument('--dx', '-dx', type=float, required=True,
@@ -256,7 +256,7 @@ if __name__ == '__main__':
     parser.add_argument('--z', '-z', nargs=2, type=int, required=True,
                         help="Minimum and maximum of the y-axis.")
     parser.add_argument('--skip_to', '-st', type=int, default=0,
-                        help="Skip to certain save point to avoid recomputing in case of crash.  Mutually exclusive with --force_restart")
+                        help="Skip to certain save point to avoid recomputing in case of crash.")
     parser.add_argument("--flip_x", '-fx', action='store_true',
                         help="Flip images along x axis")
     parser.add_argument("--flip_y", '-fy', action='store_true',

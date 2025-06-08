@@ -115,11 +115,3 @@ if __name__ == '__main__':
     output_filepath = Path(r'E:\Aidan\plaques_extracted\meshes')
 
     rasterize_all_indices(indices_filepath, coords_folder, output_filepath, 48)
-
-
-
-
-
-
-
-

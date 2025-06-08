@@ -25,7 +25,6 @@ First, clone this repository and cd into it.
 ### Arguments
 * `--input`, `-i` (required, string): File path to input .wrl file containing the mesh data.  The .wrl, if opened, should contain all the coordinates and normals in single arrays.  (e.g., the first shape object will have the Coordinate and Normal arrays.  All the other shapes should use the same array.)
 * `--output`, `-o` (required, string): File path to output directory where the binary mask image will be stored.  Ideally this directory should be non-existant or empty.  Directories with contents at the start will be deleted.
-* `--force_restart`, `-fr`: DEPRECATED.  Starts the program from the beginning.
 * `--num_threads`, `-n` (optional, int, default=1): Number of threads used for assembling the final output image.
 * `--dx`, `-dx` (required, float): Voxel size in the x-axis
 * `--dy`, `-dy` (required, float): Voxel size in the y-axis

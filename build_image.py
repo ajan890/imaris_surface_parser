@@ -53,7 +53,7 @@ def paste_array(img, arr, position):
 
 
 def build_image(d, mins, maxs, meshes, output, flips):
-    image_size = tuple([maxs[i] - mins[i] + 1 for i in range(len(mins))])
+    image_size = tuple([maxs[i] - mins[i] for i in range(len(mins))])  # may need to add 1 if image is cropped. e.g., maxs[i] - mins[i] + 1 TODO: fix this bug.
     image = zeros(image_size, dtype=bool)
 
     count = 0
