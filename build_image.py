@@ -20,9 +20,8 @@ def read_mesh_index(mesh_filepath: Path):
     return d
 
 
-def save_image(data, output_file, flips):
+def save_image(data, output_file, flips, dtype=uint8):
     output_file.mkdir(parents=True, exist_ok=True)
-    _dtype = uint8
     print("Saving images...")
     file_num = 0
     if flips[2]: # if flip z
@@ -33,7 +32,7 @@ def save_image(data, output_file, flips):
                     rot90(data[:, :, z])
 
             path = output_file / (str(file_num) + ".tif")
-            imwrite(path, layer.astype(_dtype), dtype=_dtype)
+            imwrite(path, layer.astype(dtype), dtype=dtype)
             file_num += 1
     else:
         for z in tqdm(range(data.shape[2])):
@@ -42,7 +41,7 @@ def save_image(data, output_file, flips):
                     rot90(data[:, ::-1, z]) if not flips[0] and flips[1] else \
                     rot90(data[:, :, z])
             path = output_file / (str(file_num) + ".tif")
-            imwrite(path, layer.astype(_dtype), dtype=_dtype)
+            imwrite(path, layer.astype(dtype), dtype=dtype)
             file_num += 1
 
 
