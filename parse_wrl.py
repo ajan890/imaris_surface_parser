@@ -254,7 +254,7 @@ if __name__ == '__main__':
     parser.add_argument('--y', '-y', nargs=2, type=int, required=True,
                         help="Minimum and maximum of the y-axis.")
     parser.add_argument('--z', '-z', nargs=2, type=int, required=True,
-                        help="Minimum and maximum of the y-axis.")
+                        help="Minimum and maximum of the z-axis.")
     parser.add_argument('--skip_to', '-st', type=int, default=0,
                         help="Skip to certain save point to avoid recomputing in case of crash.")
     parser.add_argument("--flip_x", '-fx', action='store_true',
