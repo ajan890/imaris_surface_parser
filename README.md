@@ -13,6 +13,9 @@ This library contains a script to voxelize the mesh output exporting surfaces fr
 
 ![image](https://github.com/user-attachments/assets/40eddf86-9908-4825-bd2f-709f6d5c5d55)
 
+Note that depending on the size of the image, this export may take hours to days.  Imaris will appear to crash while it is exporting in the background.  Expect Imaris to be in a (Not responding) state for quite a while.
+For reference, a 300GB image took me around 2.5 days to export.  The exported file size was approximately 90 GB.  Results may vary.
+
 
 ## Running
 This program can be run in Command Prompt (Windows).  Not yet tested for Linux.
@@ -49,7 +52,7 @@ The output will be located in the output directory provided, under the `image` f
 ## Dependencies
 * argparse, multiprocessing, numpy, open3d, pathlib, scipy, shutil, tqdm, tifffile
 
-All of these can be found via the Package Installer for Python (pip)
+All of these can be found via the Package Installer for Python (pip).  Use of a package installer, such as Conda, is highly recommended.
 ```
 pip install argparse multiprocessing numpy open3d pathlib scipy pytest-shutil tqdm tifffile
 ```
@@ -61,3 +64,4 @@ Developed by Aidan Jan, Hongwei Dong Lab (B.R.A.I.N) @ UCLA, 2025
 
 ### Disclaimer
 This tool was developed independently from Imaris.  It is not affiliated nor endorsed by Bitplane or Oxford Instruments.
+
